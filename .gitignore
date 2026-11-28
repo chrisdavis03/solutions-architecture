@@ -1,0 +1,18 @@
+# macOS Finder metadata
+.DS_Store
+
+# Windows Explorer thumbnail cache
+Thumbs.db
+
+# Editor and IDE settings
+.idea/
+.vscode/
+
+# Diagram render output (generated, not source)
+diagrams/.render/
+
+# Scratch and temporary files
+*.tmp
+
+# Local agent workflow state (handoff file stays on disk, never committed)
+.opencode/
