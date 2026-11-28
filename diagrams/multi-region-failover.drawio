@@ -1,0 +1,187 @@
+<mxfile host="app.diagrams.net" agent="coder" version="24.0.0">
+  <diagram name="multi-region-failover" id="mrf-failover-1">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1040" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ===== Panel A: steady state ===== -->
+        <mxCell id="panelA" value="A · Steady state: us-east-1 serves, us-west-2 is warm standby" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="860" height="940" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r53A" value="&lt;b&gt;Route 53 failover records&lt;/b&gt;&lt;br&gt;checkout.&amp;lt;domain&amp;gt;&lt;br&gt;PRIMARY → us-east-1 API (health-checked)&lt;br&gt;SECONDARY → us-west-2 API&lt;br&gt;TTL 60 s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#8c4fff;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="340" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="hcA" value="&lt;b&gt;Route 53 health check&lt;/b&gt;&lt;br&gt;HTTPS :443 GET /healthz&lt;br&gt;interval 30 s × failure threshold 3&lt;br&gt;measure_latency = false" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="regA" value="&lt;b&gt;us-east-1 · PRIMARY (active)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f0fe;strokeColor=#1a73e8;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="380" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="apiA" value="&lt;b&gt;HTTP API&lt;/b&gt; (API Gateway v2)&lt;br&gt;$default stage, auto-deploy&lt;br&gt;GET /healthz · GET /inventory/{sku} · POST /checkout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#8c4fff;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="310" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="lamA" value="&lt;b&gt;Lambda&lt;/b&gt; python3.12&lt;br&gt;checkout · inventory · healthz&lt;br&gt;(sweeper disabled)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ed7d31;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="400" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="dbLabelA" value="DynamoDB (Global Table, PAY_PER_REQUEST)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="622" width="320" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="invA" value="&lt;b&gt;mrf-inventory&lt;/b&gt;&lt;br&gt;PK sku" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="650" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ordA" value="&lt;b&gt;mrf-orders&lt;/b&gt;&lt;br&gt;PK order_id · GSI status-index" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="260" y="720" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="regB" value="&lt;b&gt;us-west-2 · SECONDARY (warm standby)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f4ea;strokeColor=#34a853;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="250" width="380" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="apiB" value="&lt;b&gt;HTTP API&lt;/b&gt; (API Gateway v2)&lt;br&gt;$default stage, auto-deploy&lt;br&gt;GET /healthz · GET /inventory/{sku} · POST /checkout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#8c4fff;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="310" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="lamB" value="&lt;b&gt;Lambda&lt;/b&gt; python3.12&lt;br&gt;checkout · inventory · healthz&lt;br&gt;+ sweeper, rate(5 minutes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ed7d31;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="400" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="dbLabelB" value="DynamoDB (Global Table replica)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="622" width="320" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="invB" value="&lt;b&gt;mrf-inventory&lt;/b&gt;&lt;br&gt;PK sku" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="650" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ordB" value="&lt;b&gt;mrf-orders&lt;/b&gt;&lt;br&gt;PK order_id · GSI status-index" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="720" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="noteA1" value="Health check targets the primary's execute-api hostname, not checkout.&amp;lt;domain&amp;gt;. That name resolves through the very records the check controls, so checking it would make the check depend on its own answer." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="834" width="820" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="noteA2" value="Replication: Global Tables, async, last-writer-wins per item. Stock checks are local to a region, so two regions can each pass during replication lag and oversell one SKU (teaching point; see lambda/checkout.py)." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="60" y="884" width="820" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Panel A edges -->
+        <mxCell id="eA1" value="PRIMARY (healthy)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8c4fff;strokeWidth=2;fontSize=11;endArrow=classic;" edge="1" parent="1" source="r53A" target="apiA">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA2" value="SECONDARY (on failover)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8c4fff;dashed=1;fontSize=11;endArrow=classic;" edge="1" parent="1" source="r53A" target="apiB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA3" value="GET /healthz every 30 s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d6b656;dashed=1;fontSize=11;endArrow=classic;" edge="1" parent="1" source="hcA" target="apiA">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA4" style="html=1;strokeColor=#ed7d31;endArrow=classic;" edge="1" parent="1" source="apiA" target="lamA">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA5" style="html=1;strokeColor=#ed7d31;endArrow=classic;" edge="1" parent="1" source="apiB" target="lamB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA6" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamA" target="invA">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA7" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamA" target="ordA">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA8" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamB" target="invB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA9" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamB" target="ordB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA10" value="replication" style="html=1;strokeColor=#2e73b8;dashed=1;startArrow=classic;endArrow=classic;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="invA" target="invB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA11" value="replication" style="html=1;strokeColor=#2e73b8;dashed=1;startArrow=classic;endArrow=classic;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ordA" target="ordB">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== Panel B: failover state ===== -->
+        <mxCell id="panelB" value="B · Failover state: us-east-1 failed its health check, traffic on us-west-2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="940" y="40" width="860" height="940" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r53B" value="&lt;b&gt;Route 53 failover records&lt;/b&gt;&lt;br&gt;checkout.&amp;lt;domain&amp;gt; → us-west-2 API&lt;br&gt;PRIMARY: unhealthy, not answering&lt;br&gt;SECONDARY: answering&lt;br&gt;TTL 60 s: clients re-resolve within ~60 s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#8c4fff;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="100" width="340" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="hcB" value="&lt;b&gt;Health check: FAILED&lt;/b&gt;&lt;br&gt;3 consecutive × 30 s failures&lt;br&gt;≈ 90 s to detect&lt;br&gt;primary marked unhealthy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="960" y="100" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="regAoff" value="&lt;b&gt;us-east-1 · PRIMARY: OFFLINE&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-weight:normal&quot;&gt;unhealthy; /healthz broken on purpose in the demo&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#9e9e9e;dashed=1;fontColor=#757575;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="960" y="250" width="380" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="apiAoff" value="&lt;b&gt;HTTP API&lt;/b&gt;&lt;br&gt;no DNS traffic; GET /healthz failing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;dashed=1;fontColor=#757575;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="310" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="lamAoff" value="&lt;b&gt;Lambda&lt;/b&gt;&lt;br&gt;healthz returns error; no new checkouts routed here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;dashed=1;fontColor=#757575;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="400" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="dbLabelAoff" value="DynamoDB (Global Table, paused)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#757575;" vertex="1" parent="1">
+          <mxGeometry x="990" y="622" width="320" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="invAoff" value="&lt;b&gt;mrf-inventory&lt;/b&gt;&lt;br&gt;stale until region returns" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f5f5f5;strokeColor=#9e9e9e;dashed=1;fontColor=#757575;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="650" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ordAoff" value="&lt;b&gt;mrf-orders&lt;/b&gt;&lt;br&gt;stale until region returns" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f5f5f5;strokeColor=#9e9e9e;dashed=1;fontColor=#757575;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="720" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="regBon" value="&lt;b&gt;us-west-2 · SECONDARY: ACTIVE&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-weight:normal&quot;&gt;takes all checkout traffic&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f4ea;strokeColor=#34a853;strokeWidth=3;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="250" width="380" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="apiBon" value="&lt;b&gt;HTTP API&lt;/b&gt;&lt;br&gt;serving checkout traffic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#8c4fff;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="310" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="lamBon" value="&lt;b&gt;Lambda&lt;/b&gt; python3.12&lt;br&gt;checkout · inventory · healthz&lt;br&gt;+ sweeper every 5 min" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ed7d31;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="400" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="dbLabelBon" value="DynamoDB (Global Table replica, now writable here)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="622" width="320" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="invBon" value="&lt;b&gt;mrf-inventory&lt;/b&gt;&lt;br&gt;PK sku" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="650" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ordBon" value="&lt;b&gt;mrf-orders&lt;/b&gt;&lt;br&gt;pending → fulfilled" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#2e73b8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="720" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="noteB1" value="Sweeper runs only in us-west-2 (enable_sweeper = true): every 5 min it promotes pending orders to fulfilled via the status-index GSI, with a conditional update, so re-runs are safe and the same order is never promoted twice." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="834" width="820" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="noteB2" value="During the outage, replication from us-east-1 is paused. Writes accepted in both regions before they converge can oversell a SKU: last-writer-wins keeps one quantity update and drops the other." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="960" y="884" width="820" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Panel B edges -->
+        <mxCell id="eB1" value="PRIMARY unhealthy → SECONDARY" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#34a853;strokeWidth=3;fontSize=11;endArrow=classic;" edge="1" parent="1" source="r53B" target="apiBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB2" value="3 failures" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#b85450;dashed=1;fontSize=11;endArrow=classic;" edge="1" parent="1" source="hcB" target="apiAoff">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB3" style="html=1;strokeColor=#ed7d31;endArrow=classic;" edge="1" parent="1" source="apiBon" target="lamBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB4" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamBon" target="invBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB5" style="html=1;strokeColor=#2e73b8;endArrow=classic;" edge="1" parent="1" source="lamBon" target="ordBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB6" value="paused" style="html=1;strokeColor=#9e9e9e;dashed=1;startArrow=classic;endArrow=classic;fontSize=10;fontColor=#757575;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="invAoff" target="invBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB7" value="paused" style="html=1;strokeColor=#9e9e9e;dashed=1;startArrow=classic;endArrow=classic;fontSize=10;fontColor=#757575;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ordAoff" target="ordBon">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend: solid arrow = live request path · dashed = health check, DNS fallback or replication · grey = offline or paused. Timings: health check 30 s × 3 failures; record TTL 60 s. Route 53 zone is looked up, never created (prerequisite: a domain you own)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="990" width="1760" height="30" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -11,6 +11,7 @@ My solutions-architecture lab: a place to write down designs, decisions, pattern
 | `notes/` | Study notes, cert prep, learning scratchpads. Raw is fine. |
 | `templates/` | Skeletons to copy: design doc, ADR. The post skeleton lives at `posts/_template.md`. Not content in their own right. |
 | `diagrams/` | Diagram sources (`.drawio`) and rendered exports (PNG/SVG). |
+| `examples/` | Runnable reference systems backing a post or pattern. Each is self-contained, with its own README, tests, and infra. |
 
 ## Conventions
 
