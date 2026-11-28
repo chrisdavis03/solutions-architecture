@@ -1,0 +1,17 @@
+# Copy to terraform.tfvars and fill in your own values. terraform.tfvars is
+# gitignored by exact name, so real values are never committed. This .example
+# file stays tracked.
+
+domain_name = "example.com" # a public hosted zone you already own
+
+# Step 1: apply with enable_traffic = false (tables only).
+enable_traffic = false
+
+# Step 2: after app-primary and app-secondary are applied, fill these in from
+# their api_hostname outputs and set enable_traffic = true.
+# primary_api_hostname   = "abc123xyz.execute-api.us-east-1.amazonaws.com"
+# secondary_api_hostname = "def456uvw.execute-api.us-west-2.amazonaws.com"
+
+# Regions default to us-east-1 (primary) and us-west-2 (secondary).
+# primary_region   = "us-east-1"
+# secondary_region = "us-west-2"

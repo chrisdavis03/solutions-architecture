@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars and keep it local. Only override what differs from defaults.
+# region               = "us-west-2"
+# orders_table_name    = "mrf-orders"
+# inventory_table_name = "mrf-inventory"
